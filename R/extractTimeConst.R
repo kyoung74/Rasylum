@@ -3,13 +3,9 @@ extractTimeConst=function(frame, time="t", force="force", zPos="zSensr", dwellTi
     ret=getDwell(frame,frame[1,dwellTime],zPos,force,time,extraTrim)
     decayData=data.frame(t=ret[,time]-ret[1,time],F=ret[,force],FZero=ret[1,force],zPos=ret[,zPos])
     cGuess=decayData$F[length(decayData$F)]
-<<<<<<< HEAD
     #aGuess=decayData$F[1]-cGuess
-    aGuess=0.4
-=======
-                                        #aGuess=decayData$F[1]-cGuess
+    #aGuess=decayData$F[1]-cGuess
     aGuess=0.9
->>>>>>> upstream/Development
     eThreshold=decayData$FZero[1]-.63*(decayData$FZero[1]-cGuess) #Point where force has decayed by 1/e
     eTime=decayData[decayData$F<eThreshold,]$t[1] #time where force has decayed by 1/e
     tau1guess=1/eTime

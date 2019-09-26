@@ -17,7 +17,16 @@ extractTimeConst=function(frame, time="t", force="force", zPos="zSensr", dwellTi
                                         #Treat any fit with errors as unconverged with zeros for all parameters
     fitData=tryCatch({
         decayFit=nls("F ~ (FZero-C)*((abs(A)%%1)*exp(-1*t*tau1)+(1-(abs(A)%%1))*exp(-1*t*tau2)) + C",decayData,start=c(tau1=tau1guess,tau2=tau2guess,A=aGuess,C=cGuess),control=nls.control(warnOnly=TRUE,maxiter=1000,minFactor=1/4096),trace=debug)
-        data.frame(residual=sum(residuals(decayFit)^2),tau1=as.numeric(coef(decayFit)["tau1"]),C=as.numeric(coef(decayFit)["C"]),tau2=as.numeric(coef(decayFit)["tau2"]),A=abs(as.numeric(coef(decayFit)["A"]))%%1,converged=decayFit$convInfo$isConv)
+        t1=as.numeric(coef(decayFit)["tau1"])
+        t2=as.numeric(coef(decayFit)["tau2"])
+        if(t1<t2){
+        	tau1=t2
+        	tau2=t1
+        }else{
+        	tau1=t1
+        	tau2=t2
+        }
+        data.frame(residual=sum(residuals(decayFit)^2),tau1,C=as.numeric(coef(decayFit)["C"]),tau2,A=abs(as.numeric(coef(decayFit)["A"]))%%1,converged=decayFit$convInfo$isConv)
     },error=function(e){
         return(data.frame(residual=Inf,tau1=0,C=0,tau2=0,A=0,converged=FALSE))
     })
@@ -26,7 +35,16 @@ extractTimeConst=function(frame, time="t", force="force", zPos="zSensr", dwellTi
                                         #Try different values of aGuess until we achieve convergence
         fitData=tryCatch({
             decayFit=nls("F ~ (FZero-C)*((abs(A)%%1)*exp(-1*t*tau1)+(1-(abs(A)%%1))*exp(-1*t*tau2)) + C",decayData,start=c(tau1=tau1guess,tau2=tau2guess,A=aGuess,C=cGuess),control=nls.control(warnOnly=TRUE,maxiter=1000,minFactor=1/4096),trace=debug)
-            data.frame(residual=sum(residuals(decayFit)^2),tau1=as.numeric(coef(decayFit)["tau1"]),C=as.numeric(coef(decayFit)["C"]),tau2=as.numeric(coef(decayFit)["tau2"]),A=abs(as.numeric(coef(decayFit)["A"]))%%1,converged=decayFit$convInfo$isConv)
+        t1=as.numeric(coef(decayFit)["tau1"])
+        t2=as.numeric(coef(decayFit)["tau2"])
+        if(t1<t2){
+        	tau1=t2
+        	tau2=t1
+        }else{
+        	tau1=t1
+        	tau2=t2
+        }
+            data.frame(residual=sum(residuals(decayFit)^2),tau1,C=as.numeric(coef(decayFit)["C"]),tau2,A=abs(as.numeric(coef(decayFit)["A"]))%%1,converged=decayFit$convInfo$isConv)
         },error=function(e){
             return(data.frame(residual=Inf,tau1=0,C=0,tau2=0,A=0,converged=FALSE))
         })
